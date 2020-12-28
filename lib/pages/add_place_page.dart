@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../widgets/image_input.dart';
 import '../providers/great_places.dart';
 import '../widgets/location_input.dart';
+import '../models/place.dart';
 
 class AddPlacePage extends StatefulWidget {
   static const routeName = '/add-place';
@@ -16,18 +17,25 @@ class AddPlacePage extends StatefulWidget {
 
 class _AddPlacePageState extends State<AddPlacePage> {
   final _titleController = TextEditingController();
-  File _pickedImage;
+  File _selectededImage;
+  PlaceLocation _selectedLocation;
 
   void _selectImage(File pickedImage) {
-    _pickedImage = pickedImage;
+    _selectededImage = pickedImage;
+  }
+
+  void _selectLocation(double latitude, double longitude) {
+    _selectedLocation = PlaceLocation(latitude: latitude, longitude: longitude);
   }
 
   void _savePlace() {
-    if (_titleController.text.isEmpty || _pickedImage == null) {
+    if (_titleController.text.isEmpty ||
+        _selectededImage == null ||
+        _selectedLocation == null) {
       return;
     }
     Provider.of<GreatPlaces>(context, listen: false)
-        .addPlace(_titleController.text, _pickedImage);
+        .addPlace(_titleController.text, _selectededImage, _selectedLocation);
     Navigator.of(context).pop();
   }
 
@@ -57,7 +65,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     SizedBox(
                       height: 10,
                     ),
-                    LocationInput(),
+                    LocationInput(_selectLocation),
                   ],
                 ),
               ),

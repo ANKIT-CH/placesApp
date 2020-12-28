@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './providers/great_places.dart';
 import './pages/places_list_page.dart';
 import './pages/add_place_page.dart';
+import './pages/place_detail_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
           ),
           home: PlacesListPage(),
           routes: {
+            PlaceDetailsPage.routeName: (ctx) => PlaceDetailsPage(),
             AddPlacePage.routeName: (ctx) => AddPlacePage(),
           }),
     );

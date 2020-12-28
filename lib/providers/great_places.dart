@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 import '../models/place.dart';
 import '../helper/database_helper.dart';
+import '../helper/location_helper.dart';
+// import '../models/place.dart';
 
 class GreatPlaces with ChangeNotifier {
   List<Place> _items = [];
@@ -12,15 +14,28 @@ class GreatPlaces with ChangeNotifier {
     return [..._items];
   }
 
-  void addPlace(
-    String pickedTitle,
-    File pickedImage,
-  ) {
+  Place findById(String id) {
+    return _items.firstWhere((element) => element.id == id);
+  }
+
+  Future<void> addPlace(
+    String selectedTitle,
+    File selectedImage,
+    PlaceLocation selectedLocation,
+  ) async {
+    final readableAddress = await LocationHelper.getLocationAddress(
+        selectedLocation.latitude, selectedLocation.longitude);
+
+    final newLocation = PlaceLocation(
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+        address: readableAddress);
+
     final newPlace = Place(
       id: DateTime.now().toString(),
-      image: pickedImage,
-      title: pickedTitle,
-      location: null,
+      image: selectedImage,
+      title: selectedTitle,
+      location: newLocation,
     );
     _items.add(newPlace);
     notifyListeners();
@@ -28,6 +43,9 @@ class GreatPlaces with ChangeNotifier {
       'id': newPlace.id,
       'title': newPlace.title,
       'image': newPlace.image.path,
+      'latitude': newPlace.location.latitude,
+      'longitude': newPlace.location.longitude,
+      'address': newPlace.location.address,
     });
   }
 
@@ -37,7 +55,11 @@ class GreatPlaces with ChangeNotifier {
         .map((item) => Place(
               id: item['id'],
               title: item['title'],
-              location: null,
+              location: PlaceLocation(
+                latitude: item['latitude'],
+                longitude: item['longitude'],
+                address: item['address'],
+              ),
               image: File(item['image']),
             ))
         .toList();
