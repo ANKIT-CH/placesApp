@@ -5,7 +5,7 @@ class DatabaseHelper {
   static Future<sql.Database> fetchDatabase() async {
     final databasePath = await sql.getDatabasesPath();
 
-    return await sql.openDatabase(path.join(databasePath, 'places.db'),
+    return sql.openDatabase(path.join(databasePath, 'places.db'),
         onCreate: (db, version) {
       return db.execute(
           'CREATE TABLE places(id TEXT PRIMARY KEY,title TEXT,image TEXT,latitude REAL,longitude REAL,address TEXT)');
@@ -15,7 +15,7 @@ class DatabaseHelper {
   static Future<void> insert(String table, Map<String, Object> data) async {
     final sqlDatabase = await DatabaseHelper.fetchDatabase();
 
-    await sqlDatabase.insert(
+    sqlDatabase.insert(
       table,
       data,
       conflictAlgorithm: sql.ConflictAlgorithm.replace,
